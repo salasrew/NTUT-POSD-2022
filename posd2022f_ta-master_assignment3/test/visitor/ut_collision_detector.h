@@ -28,43 +28,62 @@ TEST(collisionDetector,visitCircle)
 {
     Point point1(0,0);
     Point point2(0,5);
+    Point point4(0,4);
+
     TwoDimensionalVector _5(&point1,&point2);
-    Circle circle(&_5);
+    TwoDimensionalVector _4(&point1,&point4);
 
-    CollisionDetector circleDetector(&circle);
+    Circle circle5(&_5);
+    Circle circle4(&_4);
 
-    EXPECT_NO_THROW(circleDetector.visitCircle(&circle));
+    Shape* test[] = {&circle5};
+
+    CollisionDetector circleDetector(test[0]);
+
+    circleDetector.visitCircle(&circle4);
+    // circleDetector.collidedShapes();
+
+    ASSERT_TRUE(circleDetector.collidedShapes().size() == 1);
 }
 
 TEST(collisionDetector,visitTriangle)
 {
     Point point1(0, 0);
     Point point2(3, 0);
-    Point point3(3, 4);
+    Point point3(0, 4);
+    Point point4(0, 3);
 
     TwoDimensionalVector a(&point1,&point2);
     TwoDimensionalVector b(&point3,&point2);
 
-    Triangle tri(&a,&b);
+    TwoDimensionalVector c(&point1,&point4);
 
-    CollisionDetector triDetector(&tri);
+    Triangle tri1(&a,&b);
+    Triangle tri2(&a,&c);
 
-    EXPECT_NO_THROW(triDetector.visitTriangle(&tri));
+    Shape* test[] = {&tri1};
+
+    CollisionDetector triDetector(test[0]);
+    triDetector.visitTriangle(&tri2);
+
+    ASSERT_TRUE(triDetector.collidedShapes().size() == 1);
 }
 TEST(collisionDetector,visitRectangle)
 {
-    Point point1(-2, 1);
-    Point point2(1.5, 0.47);
-    Point point3(-1.47, 4.5);
+    TwoDimensionalVector RecVec1(new Point(0,0),new Point(0,3));
+    TwoDimensionalVector RecVec2(new Point(0,0),new Point(4,0));
+    TwoDimensionalVector RecVec4(new Point(0,0),new Point(3,0));
 
-    TwoDimensionalVector a(&point1,&point2);
-    TwoDimensionalVector b(&point1,&point3);
+    Rectangle rec1(&RecVec1,&RecVec2);
+    Rectangle rec2(&RecVec1,&RecVec4);
 
-    Rectangle rec(&a,&b);
+    Shape* test[] = {&rec1};
+    CollisionDetector recDetector(&rec1);
+    recDetector.visitRectangle(&rec2);
 
-    CollisionDetector recDetector(&rec);
+    ASSERT_TRUE(recDetector.collidedShapes().size()==1);
 
-    EXPECT_NO_THROW(recDetector.visitRectangle(&rec));
+
 }
 TEST(collisionDetector,visitCompoundShape)
 {
@@ -89,9 +108,13 @@ TEST(collisionDetector,visitCompoundShape)
     cs2->addShape(new Circle(vec3));
     cs2->addShape(cs1);
 
+    Shape* test[] = {cs2};
     CollisionDetector compoundShapeDetector(cs2);
 
-    EXPECT_NO_THROW(compoundShapeDetector.visitCompoundShape(cs2));   
+    compoundShapeDetector.visitCompoundShape(cs1);
+
+    ASSERT_EQ(2,compoundShapeDetector.collidedShapes().size());
+
 }
 TEST(collisionDetector,collidedShapes)
 {
