@@ -237,19 +237,28 @@ TEST(CompoundShapeTest,accept)
 
 TEST(CompoundShapeTest,addShapeTest)
 {
-    Point *p1, *p2;
-    TwoDimensionalVector *vec1;
-    CompoundShape *cs1;
+    Point *p1, *p2, *p3, *p4;
+    TwoDimensionalVector *vec1, *vec2, *vec3;
+    CompoundShape *cs1, *cs2;
     
     p1 = new Point(0, 0);
     p2 = new Point(0, 5);
+    p3 = new Point(5, 0);
+    p4 = new Point(0, 3);
 
     vec1 = new TwoDimensionalVector(p1, p2);
+    vec2 = new TwoDimensionalVector(p1, p3);
+    vec3 = new TwoDimensionalVector(p1, p4);
 
     cs1 = new CompoundShape();
+    cs1->addShape(new Circle(vec1));
+    cs1->addShape(new Rectangle(vec1,vec2));
 
-    ASSERT_NO_THROW(cs1->addShape(new Circle(vec1)));
-
+    cs2 = new CompoundShape();
+    cs2->addShape(new Circle(vec3));
+    cs2->addShape(cs1);
+    
+    ASSERT_EQ( 3*3*M_PI + 5 * 5 *M_PI + 5 * 5, cs2->area());
 }
 TEST(CompoundShapeTest,deleteCompoundShapeTest)
 {
